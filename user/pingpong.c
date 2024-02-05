@@ -8,8 +8,9 @@ main(int argc, char* argv[])
 	int fd[2];
 	char buf[100];
 	pipe(fd);
+	int pid = fork();
 	// child
-	if(fork() == 0)
+	if(pid == 0)
 	{
 		read(fd[0], buf, sizeof(buf)); 
 		printf("%d: received ping\n", getpid());
@@ -17,7 +18,7 @@ main(int argc, char* argv[])
 		close(fd[0]);
 		close(fd[1]);
 	}	
-	else
+	else if(pid > 0)
 	{
 		write(fd[1], "", 1);
 		read(fd[0], buf, sizeof(buf));

@@ -31,7 +31,7 @@ helper(int fd[])
 		wait(0);		
 	}
 	else{
-		fprintf(1, "Error: fork error\n");
+		fprintf(2, "Error: fork error\n");
 		exit(1);
 	}
 }
@@ -55,7 +55,7 @@ main(int argc, char* argv[])
 		wait(0);
 	}
 	else{
-		fprintf(1, "Error: fork error\n");
+		fprintf(2, "Error: fork error\n");
 		exit(1);
 	}
 	exit(0);
