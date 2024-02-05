@@ -36,6 +36,8 @@ uint strlen(const char*);
 void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
+void reverse(char[], int);
 int atoi(const char*);
+void itoa(int, char[]);
 int memcmp(const void *, const void *, uint);
 void *memcpy(void *, const void *, uint);

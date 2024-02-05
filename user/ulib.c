@@ -95,6 +95,19 @@ stat(const char *n, struct stat *st)
   return r;
 }
 
+void
+reverse(char str[], int len)
+{
+	int l = 0, r = len - 1;
+	while(l < r){
+		char c = str[l];
+		str[l] = str[r];
+		str[r] = c;
+		l++;
+		r--;
+	}
+}
+
 int
 atoi(const char *s)
 {
@@ -105,6 +118,31 @@ atoi(const char *s)
     n = n*10 + *s++ - '0';
   return n;
 }
+
+void
+itoa(int num, char str[])
+{
+	int i = 0;
+	int isNegative = 0;
+	if(num < 0){
+		isNegative = 1;
+		num = -num;
+	}
+	if(num == 0){
+		str[i++] = '0';
+		str[i] = '\0';
+	}
+	else{
+		while(num != 0){
+			str[i++] = num % 10;
+			num = num / 10;
+		}
+		if(isNegative) str[i++] = '-';
+		str[i] = '\0';
+		reverse(str, i);
+	}
+}
+
 
 void*
 memmove(void *vdst, const void *vsrc, int n)
