@@ -459,7 +459,7 @@ vmprinter(pagetable_t pagetable, int layer)
 		// only print valid entry
 		if(pte & PTE_V){
 			for(int j = 0; j < layer; j++) printf(" ..");
-			printf("%d: pte: %p pa %p\n", i, (uint64)pte, PTE2PA(pte));
+			printf("%d: pte %p pa %p\n", i, (uint64)pte, PTE2PA(pte));
 			// this points to a lower-level page table.
 			if((pte & (PTE_R | PTE_W | PTE_X)) == 0){
 				uint64 child = PTE2PA(pte);
