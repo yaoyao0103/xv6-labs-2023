@@ -133,3 +133,17 @@ printfinit(void)
   initlock(&pr.lock, "pr");
   pr.locking = 1;
 }
+
+void
+backtrack(void)
+{
+	printf("backtrace:\n");
+	uint64 addr = r_fp() - 8;
+	uint64* ptr = (uint64*)addr;
+	uint64 pgdown = PGROUNDDOWN(*ptr);
+	while(1){
+		if(PGROUNDDOWN(*ptr) != pgdown) return;
+		printf("%p\n", *ptr);
+		ptr += 8;
+	}
+}
