@@ -14,6 +14,7 @@ struct barrier {
   int round;     // Barrier round
 } bstate;
 
+
 static void
 barrier_init(void)
 {
@@ -30,7 +31,15 @@ barrier()
   // Block until all threads have called barrier() and
   // then increment bstate.round.
   //
-  
+  pthread_mutex_lock(&bstate.barrier_mutex);
+  bstate.nthread += 1;   
+  if(bstate.nthread >= nthread){
+    bstate.round += 1;
+    bstate.nthread = 0;
+    pthread_cond_broadcast(&bstate.barrier_cond);     // wake up every thread sleeping on cond
+  }
+  else pthread_cond_wait(&bstate.barrier_cond, &bstate.barrier_mutex);
+  pthread_mutex_unlock(&bstate.barrier_mutex);
 }
 
 static void *
@@ -46,7 +55,6 @@ thread(void *xa)
     barrier();
     usleep(random() % 100);
   }
-
   return 0;
 }
 
