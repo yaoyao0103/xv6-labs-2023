@@ -32,7 +32,6 @@ ping(uint16 sport, uint16 dport, int attempts)
       exit(1);
     }
   }
-
   char ibuf[128];
   int cc = read(fd, ibuf, sizeof(ibuf)-1);
   if(cc < 0){

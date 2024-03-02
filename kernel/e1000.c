@@ -103,6 +103,19 @@ e1000_transmit(struct mbuf *m)
   // a pointer so that it can be freed after sending.
   //
   
+  acquire(&e1000_lock);
+  int idx = regs[E1000_TDT]; // get next index of descriptor
+  if(!(tx_ring[idx].status & E1000_TXD_STAT_DD)){
+    release(&e1000_lock);
+    return -1; // check overflow and descriptor done
+  }  
+  if(tx_mbufs[idx]) mbuffree(tx_mbufs[idx]);  // free the mbuf
+  tx_ring[idx].addr = (uint64)m->head; // set descriptor addr
+  tx_ring[idx].length = m->len; // set descriptor len
+  tx_ring[idx].cmd = E1000_TXD_CMD_RS | E1000_TXD_CMD_EOP; // set descriptor cmd
+  tx_mbufs[idx] = m; // point to the new mbuf
+  regs[E1000_TDT] = (idx+1) % TX_RING_SIZE; // update index
+  release(&e1000_lock);
   return 0;
 }
 
@@ -115,6 +128,18 @@ e1000_recv(void)
   // Check for packets that have arrived from the e1000
   // Create and deliver an mbuf for each packet (using net_rx()).
   //
+  while(1){
+    int idx = (regs[E1000_RDT] + 1) % RX_RING_SIZE; // get next index of descriptor
+    if(!(rx_ring[idx].status & E1000_RXD_STAT_DD)) return; // check descriptor available
+    rx_mbufs[idx]->len = rx_ring[idx].length; // update length
+    net_rx(rx_mbufs[idx]); // deliver mbuf to network stack 
+    //struct mbuf* mbuf = mbufalloc(MBUF_DEFAULT_HEADROOM);
+    rx_mbufs[idx] = mbufalloc(0); // alloc new mbuf to replace origin mbuf
+    if(!rx_mbufs[idx]) panic("e1000_recv");
+    rx_ring[idx].addr = (uint64)rx_mbufs[idx]->head; // ring point to new mbuf
+    rx_ring[idx].status = 0; // set the ring status to zero
+    regs[E1000_RDT] = idx; // update index
+  }
 }
 
 void

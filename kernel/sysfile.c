@@ -518,7 +518,7 @@ sys_connect(void)
   argint(0, (int*)&raddr);
   argint(1, (int*)&lport);
   argint(2, (int*)&rport);
-
+  
   if(sockalloc(&f, raddr, lport, rport) < 0)
     return -1;
   if((fd=fdalloc(f)) < 0){
